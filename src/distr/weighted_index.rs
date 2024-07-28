@@ -8,8 +8,8 @@
 
 //! Weighted index sampling
 
-use crate::distributions::uniform::{SampleBorrow, SampleUniform, UniformSampler};
-use crate::distributions::Distribution;
+use crate::distr::uniform::{SampleBorrow, SampleUniform, UniformSampler};
+use crate::distr::Distribution;
 use crate::Rng;
 use core::fmt;
 
@@ -17,7 +17,7 @@ use core::fmt;
 use alloc::vec::Vec;
 use core::fmt::Debug;
 
-#[cfg(feature = "serde1")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
 /// A distribution using weighted sampling of discrete items.
@@ -59,7 +59,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use rand::prelude::*;
-/// use rand::distributions::WeightedIndex;
+/// use rand::distr::WeightedIndex;
 ///
 /// let choices = ['a', 'b', 'c'];
 /// let weights = [2,   1,   1];
@@ -78,12 +78,12 @@ use serde::{Deserialize, Serialize};
 /// }
 /// ```
 ///
-/// [`Uniform<X>`]: crate::distributions::Uniform
+/// [`Uniform<X>`]: crate::distr::Uniform
 /// [`RngCore`]: crate::RngCore
 /// [`rand_distr::weighted_alias`]: https://docs.rs/rand_distr/*/rand_distr/weighted_alias/index.html
 /// [`rand_distr::weighted_tree`]: https://docs.rs/rand_distr/*/rand_distr/weighted_tree/index.html
 #[derive(Debug, Clone, PartialEq)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct WeightedIndex<X: SampleUniform + PartialOrd> {
     cumulative_weights: Vec<X>,
     total_weight: X,
@@ -101,7 +101,7 @@ impl<X: SampleUniform + PartialOrd> WeightedIndex<X> {
     /// -   [`WeightError::InsufficientNonZero`] when the sum of all weights is zero.
     /// -   [`WeightError::Overflow`] when the sum of all weights overflows.
     ///
-    /// [`Uniform<X>`]: crate::distributions::uniform::Uniform
+    /// [`Uniform<X>`]: crate::distr::uniform::Uniform
     pub fn new<I>(weights: I) -> Result<WeightedIndex<X>, WeightError>
     where
         I: IntoIterator,
@@ -306,7 +306,7 @@ impl<X: SampleUniform + PartialOrd + Clone> WeightedIndex<X> {
     /// # Example
     ///
     /// ```
-    /// use rand::distributions::WeightedIndex;
+    /// use rand::distr::WeightedIndex;
     ///
     /// let weights = [0, 1, 2];
     /// let dist = WeightedIndex::new(&weights).unwrap();
@@ -341,7 +341,7 @@ impl<X: SampleUniform + PartialOrd + Clone> WeightedIndex<X> {
     /// # Example
     ///
     /// ```
-    /// use rand::distributions::WeightedIndex;
+    /// use rand::distr::WeightedIndex;
     ///
     /// let weights = [1, 2, 3];
     /// let mut dist = WeightedIndex::new(&weights).unwrap();
@@ -437,9 +437,9 @@ impl_weight_float!(f64);
 mod test {
     use super::*;
 
-    #[cfg(feature = "serde1")]
+    #[cfg(feature = "serde")]
     #[test]
-    fn test_weightedindex_serde1() {
+    fn test_weightedindex_serde() {
         let weighted_index = WeightedIndex::new([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).unwrap();
 
         let ser_weighted_index = bincode::serialize(&weighted_index).unwrap();

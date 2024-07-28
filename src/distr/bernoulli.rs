@@ -8,11 +8,11 @@
 
 //! The Bernoulli distribution `Bernoulli(p)`.
 
-use crate::distributions::Distribution;
+use crate::distr::Distribution;
 use crate::Rng;
 use core::fmt;
 
-#[cfg(feature = "serde1")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
 /// The [Bernoulli distribution](https://en.wikipedia.org/wiki/Bernoulli_distribution) `Bernoulli(p)`.
@@ -31,7 +31,7 @@ use serde::{Deserialize, Serialize};
 /// # Example
 ///
 /// ```rust
-/// use rand::distributions::{Bernoulli, Distribution};
+/// use rand::distr::{Bernoulli, Distribution};
 ///
 /// let d = Bernoulli::new(0.3).unwrap();
 /// let v = d.sample(&mut rand::thread_rng());
@@ -44,7 +44,7 @@ use serde::{Deserialize, Serialize};
 /// so only probabilities that are multiples of 2<sup>-64</sup> can be
 /// represented.
 #[derive(Clone, Copy, Debug, PartialEq)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Bernoulli {
     /// Probability of success, relative to the maximal integer.
     p_int: u64,
@@ -153,11 +153,11 @@ impl Distribution<bool> for Bernoulli {
 #[cfg(test)]
 mod test {
     use super::Bernoulli;
-    use crate::distributions::Distribution;
+    use crate::distr::Distribution;
     use crate::Rng;
 
     #[test]
-    #[cfg(feature = "serde1")]
+    #[cfg(feature = "serde")]
     fn test_serializing_deserializing_bernoulli() {
         let coin_flip = Bernoulli::new(0.5).unwrap();
         let de_coin_flip: Bernoulli =

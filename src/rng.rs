@@ -9,8 +9,8 @@
 
 //! [`Rng`] trait
 
-use crate::distributions::uniform::{SampleRange, SampleUniform};
-use crate::distributions::{self, Distribution, Standard};
+use crate::distr::uniform::{SampleRange, SampleUniform};
+use crate::distr::{self, Distribution, Standard};
 use core::num::Wrapping;
 use core::{mem, slice};
 use rand_core::RngCore;
@@ -73,7 +73,8 @@ pub trait Rng: RngCore {
     /// generated.
     ///
     /// For arrays of integers, especially for those with small element types
-    /// (< 64 bit), it will likely be faster to instead use [`Rng::fill`].
+    /// (< 64 bit), it will likely be faster to instead use [`Rng::fill`],
+    /// though note that generated values will differ.
     ///
     /// ```
     /// use rand::{thread_rng, Rng};
@@ -86,7 +87,7 @@ pub trait Rng: RngCore {
     /// rng.fill(&mut arr2);                    // array fill
     /// ```
     ///
-    /// [`Standard`]: distributions::Standard
+    /// [`Standard`]: distr::Standard
     #[inline]
     fn random<T>(&mut self) -> T
     where
@@ -125,7 +126,7 @@ pub trait Rng: RngCore {
     /// println!("{}", n);
     /// ```
     ///
-    /// [`Uniform`]: distributions::uniform::Uniform
+    /// [`Uniform`]: distr::uniform::Uniform
     #[track_caller]
     fn gen_range<T, R>(&mut self, range: R) -> T
     where
@@ -139,7 +140,7 @@ pub trait Rng: RngCore {
     /// Generate values via an iterator
     ///
     /// This is a just a wrapper over [`Rng::sample_iter`] using
-    /// [`distributions::Standard`].
+    /// [`distr::Standard`].
     ///
     /// Note: this method consumes its argument. Use
     /// `(&mut rng).gen_iter()` to avoid consuming the RNG.
@@ -154,7 +155,7 @@ pub trait Rng: RngCore {
     /// assert_eq!(&v, &[1, 2, 3, 4, 5]);
     /// ```
     #[inline]
-    fn gen_iter<T>(self) -> distributions::DistIter<Standard, Self, T>
+    fn gen_iter<T>(self) -> distr::DistIter<Standard, Self, T>
     where
         Self: Sized,
         Standard: Distribution<T>,
@@ -168,7 +169,7 @@ pub trait Rng: RngCore {
     ///
     /// ```
     /// use rand::{thread_rng, Rng};
-    /// use rand::distributions::Uniform;
+    /// use rand::distr::Uniform;
     ///
     /// let mut rng = thread_rng();
     /// let x = rng.sample(Uniform::new(10u32, 15).unwrap());
@@ -189,7 +190,7 @@ pub trait Rng: RngCore {
     ///
     /// ```
     /// use rand::{thread_rng, Rng};
-    /// use rand::distributions::{Alphanumeric, Uniform, Standard};
+    /// use rand::distr::{Alphanumeric, Uniform, Standard};
     ///
     /// let mut rng = thread_rng();
     ///
@@ -213,7 +214,7 @@ pub trait Rng: RngCore {
     ///     println!("Not a 6; rolling again!");
     /// }
     /// ```
-    fn sample_iter<T, D>(self, distr: D) -> distributions::DistIter<D, Self, T>
+    fn sample_iter<T, D>(self, distr: D) -> distr::DistIter<D, Self, T>
     where
         D: Distribution<T>,
         Self: Sized,
@@ -222,6 +223,10 @@ pub trait Rng: RngCore {
     }
 
     /// Fill any type implementing [`Fill`] with random data
+    ///
+    /// This method is implemented for types which may be safely reinterpreted
+    /// as an (aligned) `[u8]` slice then filled with random data. It is often
+    /// faster than using [`Rng::random`] but not value-equivalent.
     ///
     /// The distribution is expected to be uniform with portable results, but
     /// this cannot be guaranteed for third-party implementations.
@@ -259,11 +264,11 @@ pub trait Rng: RngCore {
     ///
     /// If `p < 0` or `p > 1`.
     ///
-    /// [`Bernoulli`]: distributions::Bernoulli
+    /// [`Bernoulli`]: distr::Bernoulli
     #[inline]
     #[track_caller]
     fn gen_bool(&mut self, p: f64) -> bool {
-        match distributions::Bernoulli::new(p) {
+        match distr::Bernoulli::new(p) {
             Ok(d) => self.sample(d),
             Err(_) => panic!("p={:?} is outside range [0.0, 1.0]", p),
         }
@@ -291,11 +296,11 @@ pub trait Rng: RngCore {
     /// println!("{}", rng.gen_ratio(2, 3));
     /// ```
     ///
-    /// [`Bernoulli`]: distributions::Bernoulli
+    /// [`Bernoulli`]: distr::Bernoulli
     #[inline]
     #[track_caller]
     fn gen_ratio(&mut self, numerator: u32, denominator: u32) -> bool {
-        match distributions::Bernoulli::from_ratio(numerator, denominator) {
+        match distr::Bernoulli::from_ratio(numerator, denominator) {
             Ok(d) => self.sample(d),
             Err(_) => panic!(
                 "p={}/{} is outside range [0.0, 1.0]",
@@ -554,7 +559,7 @@ mod test {
 
     #[test]
     fn test_rng_trait_object() {
-        use crate::distributions::{Distribution, Standard};
+        use crate::distr::{Distribution, Standard};
         let mut rng = rng(109);
         let mut r = &mut rng as &mut dyn RngCore;
         r.next_u32();
@@ -566,7 +571,7 @@ mod test {
     #[test]
     #[cfg(feature = "alloc")]
     fn test_rng_boxed_trait() {
-        use crate::distributions::{Distribution, Standard};
+        use crate::distr::{Distribution, Standard};
         let rng = rng(110);
         let mut r = Box::new(rng) as Box<dyn RngCore>;
         r.next_u32();

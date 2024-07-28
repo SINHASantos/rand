@@ -4,11 +4,11 @@ use crate::Distribution;
 use core::fmt;
 #[allow(unused_imports)]
 use num_traits::Float;
-use rand::distributions::uniform::Uniform;
+use rand::distr::uniform::Uniform;
 use rand::Rng;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-#[cfg_attr(feature = "serde1", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 enum SamplingMethod {
     InverseTransform {
         initial_p: f64,
@@ -58,7 +58,7 @@ enum SamplingMethod {
 /// println!("{} is from a hypergeometric distribution", v);
 /// ```
 #[derive(Copy, Clone, Debug, PartialEq)]
-#[cfg_attr(feature = "serde1", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Hypergeometric {
     n1: u64,
     n2: u64,

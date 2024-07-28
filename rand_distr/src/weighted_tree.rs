@@ -14,10 +14,10 @@ use core::ops::SubAssign;
 use super::WeightError;
 use crate::Distribution;
 use alloc::vec::Vec;
-use rand::distributions::uniform::{SampleBorrow, SampleUniform};
-use rand::distributions::Weight;
+use rand::distr::uniform::{SampleBorrow, SampleUniform};
+use rand::distr::Weight;
 use rand::Rng;
-#[cfg(feature = "serde1")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
 /// A distribution using weighted sampling to pick a discretely selected item.
@@ -30,7 +30,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// # Key differences
 ///
-/// The main distinction between [`WeightedTreeIndex<W>`] and [`rand::distributions::WeightedIndex<W>`]
+/// The main distinction between [`WeightedTreeIndex<W>`] and [`rand::distr::WeightedIndex<W>`]
 /// lies in the internal representation of weights. In [`WeightedTreeIndex<W>`],
 /// weights are structured as a tree, which is optimized for frequent updates of the weights.
 ///
@@ -77,13 +77,13 @@ use serde::{Deserialize, Serialize};
 /// ```
 ///
 /// [`WeightedTreeIndex<W>`]: WeightedTreeIndex
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(
-    feature = "serde1",
+    feature = "serde",
     serde(bound(serialize = "W: Serialize, W::Sampler: Serialize"))
 )]
 #[cfg_attr(
-    feature = "serde1",
+    feature = "serde",
     serde(bound(deserialize = "W: Deserialize<'de>, W::Sampler: Deserialize<'de>"))
 )]
 #[derive(Clone, Default, Debug, PartialEq)]

@@ -14,8 +14,8 @@ use core::char;
 use core::num::Wrapping;
 
 #[cfg(feature = "alloc")]
-use crate::distributions::DistString;
-use crate::distributions::{Distribution, Standard, Uniform};
+use crate::distr::DistString;
+use crate::distr::{Distribution, Standard, Uniform};
 use crate::Rng;
 
 use core::mem::{self, MaybeUninit};
@@ -23,7 +23,7 @@ use core::mem::{self, MaybeUninit};
 use core::simd::prelude::*;
 #[cfg(feature = "simd_support")]
 use core::simd::{LaneCount, MaskElement, SupportedLaneCount};
-#[cfg(feature = "serde1")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
 // ----- Sampling distributions -----
@@ -35,7 +35,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use rand::{Rng, thread_rng};
-/// use rand::distributions::Alphanumeric;
+/// use rand::distr::Alphanumeric;
 ///
 /// let mut rng = thread_rng();
 /// let chars: String = (0..7).map(|_| rng.sample(Alphanumeric) as char).collect();
@@ -45,7 +45,7 @@ use serde::{Deserialize, Serialize};
 /// The [`DistString`] trait provides an easier method of generating
 /// a random `String`, and offers more efficient allocation:
 /// ```
-/// use rand::distributions::{Alphanumeric, DistString};
+/// use rand::distr::{Alphanumeric, DistString};
 /// let string = Alphanumeric.sample_string(&mut rand::thread_rng(), 16);
 /// println!("Random string: {}", string);
 /// ```
@@ -67,7 +67,7 @@ use serde::{Deserialize, Serialize};
 /// - [Wikipedia article on Password Strength](https://en.wikipedia.org/wiki/Password_strength)
 /// - [Diceware for generating memorable passwords](https://en.wikipedia.org/wiki/Diceware)
 #[derive(Debug, Clone, Copy)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Alphanumeric;
 
 // ----- Implementations of distributions -----

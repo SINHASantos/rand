@@ -172,7 +172,7 @@ use crate::Rng;
 /// ```
 /// # #![allow(dead_code)]
 /// use rand::Rng;
-/// use rand::distributions::{Distribution, Standard};
+/// use rand::distr::{Distribution, Standard};
 ///
 /// struct MyF32 {
 ///     x: f32,
@@ -188,7 +188,7 @@ use crate::Rng;
 /// ## Example usage
 /// ```
 /// use rand::prelude::*;
-/// use rand::distributions::Standard;
+/// use rand::distr::Standard;
 ///
 /// let val: f32 = StdRng::from_os_rng().sample(Standard);
 /// println!("f32 from [0, 1): {}", val);
@@ -218,5 +218,5 @@ use crate::Rng;
 /// [`mask32x4`]: std::simd::mask32x4
 /// [`simd_support`]: https://github.com/rust-random/rand#crate-features
 #[derive(Clone, Copy, Debug)]
-#[cfg_attr(feature = "serde1", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Standard;
